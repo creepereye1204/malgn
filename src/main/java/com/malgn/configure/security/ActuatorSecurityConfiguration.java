@@ -16,7 +16,7 @@ public class ActuatorSecurityConfiguration {
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
-    public SecurityFilterChain actuatorSecurityFilterChain(HttpSecurity http) {
+    public SecurityFilterChain actuatorSecurityFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher(EndpointRequest.toAnyEndpoint());
 
         http.authorizeHttpRequests(requests -> requests.anyRequest().permitAll());

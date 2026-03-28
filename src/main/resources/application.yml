@@ -1,8 +1,6 @@
-## server
 server:
   port: 8080
 
-## spring
 spring:
   application:
     name: simple-cms-api
@@ -15,7 +13,6 @@ spring:
       schema-locations: classpath:db/sql/h2-schema.sql
       data-locations: classpath:db/sql/h2-data.sql
   datasource:
-    driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:test
     username: sa
     password:
@@ -30,19 +27,20 @@ spring:
     virtual:
       enabled: on
 
+springdoc:
+  querydsl:
+    enabled: false
 
-## p6spy
 decorator:
   datasource:
     p6spy:
       enable-logging: on
 
-## logging
 logging:
   charset:
     console: UTF-8
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} ${LOG_LEVEL_PATTERN:%-5p} ${PID} --- [%15.15t] %-40.40logger{39} :%06L : %m%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p ${PID} --- [%15.15t] %-40.40logger{39} :%06L : %m%n"
   level:
     root: info
     web: info

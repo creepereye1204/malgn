@@ -65,27 +65,72 @@
 - 콘텐츠 생성자 본인만 수정 + 삭제 가능하게 구현해주세요.
 - 단, 관리자(ADMIN) 인 경우 모든 콘텐츠에 대해 수정 + 삭제할 수 있게 구현해주세요.
 
-## 제출
+## 구현 상세 내용
 
-### 기한
+### 로그인 및 보안
+- **로그인 방식**: Spring Security 기반의 **Form Login** 및 **HTTP Basic Authentication**을 구현하였습니다.
+- **비밀번호 암호화**: `BCryptPasswordEncoder`를 사용하여 안전하게 암호화하여 저장합니다.
+- **사용자 정보**: H2 Database의 `members` 테이블에서 사용자 정보를 관리하며, `UserDetailsService`를 커스터마이징하여 연동하였습니다.
+- **초기 데이터**: `h2-data.sql`을 통해 테스트용 계정을 생성하였습니다.
+  - 관리자: `admin` / `password`
+  - 사용자1: `user1` / `password`
+  - 사용자2: `user2` / `password`
 
-- 본 메일 수신 후 26.03.09(월) 오후 3시까지 (주)맑은기술 채용 메일(recruit@malgn.com) 로 보내주시기 바랍니다. 
+### 콘텐츠 관리 (CRUD)
+- **JPA Auditing**: `created_date`, `created_by`, `last_modified_date`, `last_modified_by` 컬럼은 JPA Auditing 기능을 통해 자동으로 관리됩니다.
+- **조회수**: 콘텐츠 상세 조회(`GET /api/contents/{id}`) 시 조회수가 1씩 증가합니다.
+- **페이징**: 목록 조회 시 Spring Data JPA의 `Pageable`을 사용하여 페이징 처리를 구현하였습니다.
 
-### 제출물
+### 접근 권한 (RBAC)
+- **수정/삭제 권한**: 콘텐츠의 `created_by`와 현재 로그인한 사용자의 `username`을 비교하여 본인이 작성한 콘텐츠만 수정 및 삭제가 가능하도록 구현하였습니다.
+- **관리자 권한**: `ADMIN` 역할을 가진 사용자는 본인이 작성하지 않은 콘텐츠에 대해서도 수정 및 삭제가 가능합니다.
 
-- 소스코드 (Zip 또는 Github repository 링크)
-- README.md
-    - 추가 내용이나 제출물 관련 내용을 추가헤주세요.
-    - 사용한 AI 또는 참고 자료가 있다면 간단히 명시
-- REST API Docs
-    - 자유롭게 작성해서 첨부해주세요.
+### 예외 처리
+- `@RestControllerAdvice`를 사용하여 전역 예외 처리(`GlobalExceptionHandler`)를 구현하였습니다.
+- 존재하지 않는 콘텐츠 접근(404), 권한 없음(403) 등에 대해 적절한 응답을 반환합니다.
 
+### 사용된 도구 및 참고 자료
+- **AI 도구**: Google Gemini CLI를 활용하여 프로젝트 구조 설계 및 코드 구현을 진행하였습니다.
+- **참고 자료**: Spring Boot Reference Documentation, Spring Security Reference.
 
+## REST API Docs
 
+### 1. 콘텐츠 목록 조회 (페이징)
+- **Method**: `GET`
+- **URL**: `/api/contents`
+- **Params**: `page` (default 0), `size` (default 10)
+- **Auth**: USER, ADMIN
 
+### 2. 콘텐츠 상세 조회
+- **Method**: `GET`
+- **URL**: `/api/contents/{id}`
+- **Auth**: USER, ADMIN
 
+### 3. 콘텐츠 추가
+- **Method**: `POST`
+- **URL**: `/api/contents`
+- **Body**: 
+  ```json
+  {
+    "title": "제목",
+    "description": "내용"
+  }
+  ```
+- **Auth**: USER, ADMIN
 
+### 4. 콘텐츠 수정
+- **Method**: `PUT`
+- **URL**: `/api/contents/{id}`
+- **Body**: 
+  ```json
+  {
+    "title": "수정할 제목",
+    "description": "수정할 내용"
+  }
+  ```
+- **Auth**: 작성자 본인 또는 ADMIN
 
-
-
-
+### 5. 콘텐츠 삭제
+- **Method**: `DELETE`
+- **URL**: `/api/contents/{id}`
+- **Auth**: 작성자 본인 또는 ADMIN

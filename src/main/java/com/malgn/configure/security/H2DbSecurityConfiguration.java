@@ -18,7 +18,7 @@ public class H2DbSecurityConfiguration {
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
-    public SecurityFilterChain h2DbSecurityFilterChain(HttpSecurity http) {
+    public SecurityFilterChain h2DbSecurityFilterChain(HttpSecurity http) throws Exception {
 
         http.securityMatcher(
             PathPatternRequestMatcher.withDefaults()
