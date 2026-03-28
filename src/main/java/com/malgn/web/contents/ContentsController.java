@@ -9,6 +9,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springdoc.core.annotations.ParameterObject;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/contents")
@@ -19,7 +20,7 @@ public class ContentsController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Long create(@RequestBody ContentsRequest request) {
+    public Long create(@Valid @RequestBody ContentsRequest request) {
         Contents contents = contentsService.create(request.getTitle(), request.getDescription());
         return contents.getId();
     }
@@ -37,7 +38,7 @@ public class ContentsController {
     }
 
     @PutMapping("/{id}")
-    public void update(@PathVariable Long id, @RequestBody ContentsRequest request) {
+    public void update(@PathVariable Long id, @Valid @RequestBody ContentsRequest request) {
         contentsService.update(id, request.getTitle(), request.getDescription());
     }
 
