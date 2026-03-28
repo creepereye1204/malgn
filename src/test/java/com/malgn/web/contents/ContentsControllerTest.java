@@ -14,14 +14,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import com.malgn.web.GlobalExceptionHandler;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -42,6 +44,7 @@ class ContentsControllerTest {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(contentsController)
                 .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+                .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
     }
 
@@ -77,5 +80,27 @@ class ContentsControllerTest {
         mockMvc.perform(get("/api/contents/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Post"));
+    }
+
+    @Test
+    void update_Forbidden_WhenNotOwner() throws Exception {
+        ContentsRequest request = new ContentsRequest();
+        request.setTitle("Title");
+        request.setDescription("Desc");
+
+        doThrow(new AccessDeniedException("Forbidden")).when(contentsService).update(anyLong(), anyString(), anyString());
+
+        mockMvc.perform(put("/api/contents/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void delete_Forbidden_WhenNotOwner() throws Exception {
+        doThrow(new AccessDeniedException("Forbidden")).when(contentsService).delete(anyLong());
+
+        mockMvc.perform(delete("/api/contents/1"))
+                .andExpect(status().isForbidden());
     }
 }
