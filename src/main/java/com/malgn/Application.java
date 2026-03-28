@@ -33,6 +33,13 @@ public class Application {
                         .role(Role.USER)
                         .build());
             }
+            if (memberRepository.findByUsername("user2").isEmpty()) {
+                memberRepository.save(Member.builder()
+                        .username("user2")
+                        .password(passwordEncoder.encode("password"))
+                        .role(Role.USER)
+                        .build());
+            }
         };
     }
 }
