@@ -1,0 +1,28 @@
+@startuml
+!theme plain
+skinparam linetype ortho
+
+entity "Member" as member {
+  * id : BIGINT <<PK>>
+  --
+  * username : VARCHAR(50) <<Unique>>
+  * password : VARCHAR(255)
+  * role : VARCHAR(20)
+  * created_date : TIMESTAMP
+  last_modified_date : TIMESTAMP
+}
+
+entity "Contents" as contents {
+  * id : BIGINT <<PK>>
+  --
+  * title : VARCHAR(100)
+  description : TEXT
+  * view_count : BIGINT
+  * created_date : TIMESTAMP
+  * created_by : VARCHAR(50) <<FK>>
+  last_modified_date : TIMESTAMP
+  last_modified_by : VARCHAR(50)
+}
+
+member ||--o{ contents : "creates"
+@enduml
