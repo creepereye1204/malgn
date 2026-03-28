@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
         String errorMessage = e.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .collect(Collectors.joining(", "));
-        response.put("message", "Validation failed: " + errorMessage);
+        response.put("message", "입력값 검증 실패: " + errorMessage);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
