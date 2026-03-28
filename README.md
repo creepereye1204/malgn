@@ -1,136 +1,71 @@
 # 2026 신입 Back-End 개발자 코딩 과제 - 간단한 CMS REST API
 
-2026년도 신입 Back-End 개발자 코딩 과제입니다.
-간단한 CMS(Contents Management System) REST API 를 구현하는 것이 목표입니다.
+본 프로젝트는 (주)맑은기술 2026년도 신입 Back-End 개발자 채용을 위한 코딩 과제 결과물입니다.
+Spring Boot를 기반으로 콘텐츠 관리(CMS) 기능을 수행하는 REST API를 구현하였습니다.
 
-외부 자료 검색 및 AI 도구 사용을 허용합니다. 다만, 제출물에 활용한 도구와 방식을 간단하게 명시해주시기 바랍니다.
+## 프로젝트 개요
 
-## Spec
+- **목표**: 간단한 CMS 콘텐츠 관리 API 구현 (CRUD, 페이징, 권한 제어)
+- **핵심 기능**:
+  - 콘텐츠 추가, 목록 조회(페이징), 상세 조회(조회수 증가), 수정, 삭제
+  - Spring Security를 이용한 인증 및 인가 (Role 기반 접근 제어)
+  - 작성자 본인 또는 관리자(ADMIN)만 수정/삭제 가능한 권한 로직
 
-- Java 25
-- Spring Boot 4
-- Spring Security
-- JPA
-- H2 (db)
-- Lombok (필요시)
+## 기술 스택 (Spec)
 
-## 과제 목표
+- **언어**: Java 25
+- **프레임워크**: Spring Boot 4.0.3
+- **보안**: Spring Security (Form Login, HTTP Basic Auth)
+- **데이터베이스**: H2 Database (In-memory)
+- **ORM**: Spring Data JPA
+- **문서화**: SpringDoc OpenAPI (Swagger UI)
+- **기타**: Lombok, Gradle
 
-- 간단한 CMS 콘텐츠 관리 API 를 구현 해주세요.
-- DB Schema 모두 구현해주세요.
-- DB 는 h2 를 사용해주세요.
-- 가능한 예외처리도 구현해주세요.
-- 필요하다고 생각되는 부분은 추가로 구현해도 됩니다.
+## 실행 방법
 
-## 데이터 모델
+### 1. 로컬 환경 실행
+```bash
+./gradlew bootRun
+```
+- API 접속 주소: http://localhost:8080
+- H2 Console: http://localhost:8080/h2-console (JDBC URL: jdbc:h2:mem:test)
 
-### Contents
+### 2. Docker를 이용한 실행
+```bash
+docker compose up --build
+```
+- Docker 환경에서도 동일하게 8080 포트로 접속 가능합니다.
 
-| 컬럼명                | 이름  | 설명          | 데이터 타입                      | 비고 |
-|--------------------|-----|-------------|-----------------------------|----|
-| id                 | 아이디 | 고유 아이디      | bigint primary key not null |    |
-| title              | 제목  | contents 제목 | varchar(100) not null       |    |
-| description        | 내용  | contents 내용 | text                        |    |
-| view_count         | 조회수 | 조회수         | bigint not null             |    |
-| created_date       | 생성일 | 생성한 날짜      | timestamp                   |    |
-| created_by         | 생성자 | 생성한 사용자     | varchar(50) not null        |    |
-| last_modified_date | 수정일 | 마지막 수정일     | timestamp                   |    |
-| last_modified_by   | 수정자 | 마지막 수정한 사용자 | varchar(50)                 |    |
+## 사용자 계정 및 권한
 
-## 구현 기능
+시스템 시작 시 Application.java의 CommandLineRunner를 통해 다음 계정들이 자동으로 생성됩니다.
 
-### 콘텐츠 관련 CRUD
+| Username | Password | Role | 설명 |
+| :--- | :--- | :--- | :--- |
+| **admin** | password | **ADMIN** | 모든 콘텐츠 수정/삭제 가능 |
+| **user1** | password | **USER** | 본인 작성 콘텐츠만 수정/삭제 가능 |
+| **user2** | password | **USER** | 본인 작성 콘텐츠만 수정/삭제 가능 |
 
-시스템에 등록된 콘텐츠에 대한 CRUD 를 필수로 구현해주세요.
+## 프로젝트 문서 (docs/)
 
-#### 기능
-- 콘텐츠 추가
-- 콘텐츠 목록 조회
-  - 반드시 페이징 처리를 해주세요.
-- 콘텐츠 상세 조회
-- 콘텐츠 수정
-- 콘텐츠 삭제
+상세한 설계 및 명세는 docs 폴더 내 파일들을 참고해 주세요.
+- **[ERD]**: docs/erd.puml (Member와 Contents 관계도)
+- **[Sequence Diagram]**: docs/permission-sequence.puml (수정/삭제 시 권한 체크 로직)
+- **[API 명세서]**: docs/api-spec.md (상세 요청/응답 형식)
+- **[Swagger UI]**: 서버 실행 후 http://localhost:8080/swagger-ui/index.html 접속
 
+## 추가 구현 내용 및 특징
 
-### 로그인
-- Spring Security 를 이용해서 로그인을 필수로 구현해주세요.
-- 로그인 방식은 자유롭게 선택하여 구현하되, `README.md` 에 명시해주세요
-- Role
-    - 관리자(ADMIN)
-    - 사용자(USER)
+1.  **입력 데이터 검증**: Bean Validation(@Valid, @NotBlank 등)을 적용하여 안정적인 데이터 처리를 보장하며, 한글로 된 명확한 에러 메시지를 반환합니다.
+2.  **전역 예외 처리**: @RestControllerAdvice를 통해 404, 403, 400 등의 에러 상황을 일관된 JSON 형식으로 처리합니다.
+3.  **JPA Auditing**: BaseTimeEntity를 통해 생성/수정 일시와 작성자를 자동으로 기록합니다.
+4.  **테스트 코드**: 권한 체크 로직(작성자 여부에 따른 403 에러 등)을 포함한 핵심 기능 테스트를 구현하였습니다.
 
-### 접근 권한
+## 사용 도구 및 참고 자료
 
-- 접근 권한을 필수로 구현해주세요.
-- 콘텐츠 생성자 본인만 수정 + 삭제 가능하게 구현해주세요.
-- 단, 관리자(ADMIN) 인 경우 모든 콘텐츠에 대해 수정 + 삭제할 수 있게 구현해주세요.
+- **AI 도구**: Google Gemini CLI를 활용하여 프로젝트 아키텍처 설계, 도메인 모델링, 반복적인 보일러플레이트 코드 생성 및 문서화 작업을 효율적으로 진행하였습니다.
+- **참고 자료**: Spring Boot Reference, Spring Security Architecture, SpringDoc OpenAPI Documentation.
 
-## 구현 상세 내용
-
-### 로그인 및 보안
-- **로그인 방식**: Spring Security 기반의 **Form Login** 및 **HTTP Basic Authentication**을 구현하였습니다.
-- **비밀번호 암호화**: `BCryptPasswordEncoder`를 사용하여 안전하게 암호화하여 저장합니다.
-- **사용자 정보**: H2 Database의 `members` 테이블에서 사용자 정보를 관리하며, `UserDetailsService`를 커스터마이징하여 연동하였습니다.
-- **초기 데이터**: `h2-data.sql`을 통해 테스트용 계정을 생성하였습니다.
-  - 관리자: `admin` / `password`
-  - 사용자1: `user1` / `password`
-  - 사용자2: `user2` / `password`
-
-### 콘텐츠 관리 (CRUD)
-- **JPA Auditing**: `created_date`, `created_by`, `last_modified_date`, `last_modified_by` 컬럼은 JPA Auditing 기능을 통해 자동으로 관리됩니다.
-- **조회수**: 콘텐츠 상세 조회(`GET /api/contents/{id}`) 시 조회수가 1씩 증가합니다.
-- **페이징**: 목록 조회 시 Spring Data JPA의 `Pageable`을 사용하여 페이징 처리를 구현하였습니다.
-
-### 접근 권한 (RBAC)
-- **수정/삭제 권한**: 콘텐츠의 `created_by`와 현재 로그인한 사용자의 `username`을 비교하여 본인이 작성한 콘텐츠만 수정 및 삭제가 가능하도록 구현하였습니다.
-- **관리자 권한**: `ADMIN` 역할을 가진 사용자는 본인이 작성하지 않은 콘텐츠에 대해서도 수정 및 삭제가 가능합니다.
-
-### 예외 처리
-- `@RestControllerAdvice`를 사용하여 전역 예외 처리(`GlobalExceptionHandler`)를 구현하였습니다.
-- 존재하지 않는 콘텐츠 접근(404), 권한 없음(403) 등에 대해 적절한 응답을 반환합니다.
-
-### 사용된 도구 및 참고 자료
-- **AI 도구**: Google Gemini CLI를 활용하여 프로젝트 구조 설계 및 코드 구현을 진행하였습니다.
-- **참고 자료**: Spring Boot Reference Documentation, Spring Security Reference.
-
-## REST API Docs
-
-### 1. 콘텐츠 목록 조회 (페이징)
-- **Method**: `GET`
-- **URL**: `/api/contents`
-- **Params**: `page` (default 0), `size` (default 10)
-- **Auth**: USER, ADMIN
-
-### 2. 콘텐츠 상세 조회
-- **Method**: `GET`
-- **URL**: `/api/contents/{id}`
-- **Auth**: USER, ADMIN
-
-### 3. 콘텐츠 추가
-- **Method**: `POST`
-- **URL**: `/api/contents`
-- **Body**: 
-  ```json
-  {
-    "title": "제목",
-    "description": "내용"
-  }
-  ```
-- **Auth**: USER, ADMIN
-
-### 4. 콘텐츠 수정
-- **Method**: `PUT`
-- **URL**: `/api/contents/{id}`
-- **Body**: 
-  ```json
-  {
-    "title": "수정할 제목",
-    "description": "수정할 내용"
-  }
-  ```
-- **Auth**: 작성자 본인 또는 ADMIN
-
-### 5. 콘텐츠 삭제
-- **Method**: `DELETE`
-- **URL**: `/api/contents/{id}`
-- **Auth**: 작성자 본인 또는 ADMIN
+## 제출 정보
+- **제출 기한**: 26.03.09(월) 오후 3시
+- **제출처**: recruit@malgn.com

@@ -1,0 +1,38 @@
+@startuml
+actor "Client (User)" as client
+participant "ContentsController" as controller
+participant "ContentsService" as service
+participant "SecurityContext" as security
+database "H2 Database" as db
+
+client -> controller : PUT /api/contents/{id}
+activate controller
+
+controller -> service : update(id, title, description)
+activate service
+
+service -> db : findById(id)
+db --> service : Contents Entity
+
+service -> security : getAuthentication()
+security --> service : Current User (Name, Roles)
+
+service -> service : checkPermission(contents)
+note right
+  - Is Admin?
+  - OR Is created_by == current user?
+end note
+
+alt Permission Denied
+    service --> controller : throw AccessDeniedException
+    controller --> client : 403 Forbidden
+else Permission Granted
+    service -> contents : update(title, description)
+    service -> db : save(contents)
+    service --> controller : success
+    controller --> client : 200 OK
+end
+
+deactivate service
+deactivate controller
+@enduml
