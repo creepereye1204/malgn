@@ -155,6 +155,15 @@ public ResponseEntity<Map<String, String>> handleGeneralException(Exception e) {
 - **Memory**: 16GB DDR4
 - **Java**: OpenJDK 25 (GraalVM Community Edition)
 
+## 7. 환경 설정 (Environment Configuration)
+
+본 프로젝트는 보안과 설정 유연성을 위해 `.env` 파일을 활용합니다. 프로젝트 루트 폴더에 아래와 같이 파일을 생성하여 슬랙 알림을 활성화할 수 있습니다.
+
+```env
+# 슬랙 웹훅 URL (실제 주소로 대체 필요)
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+```
+
 ## 8. 실행 및 테스트 방법 (Execution & Testing)
 
 본 프로젝트는 `Makefile`을 통해 주요 명령어를 간편하게 실행할 수 있습니다.
@@ -185,5 +194,13 @@ public ResponseEntity<Map<String, String>> handleGeneralException(Exception e) {
 - **[권한 시퀀스]**: [docs/permission-sequence.puml](docs/permission-sequence.puml)
 - **[API 상세 명세]**: [docs/api-spec.md](docs/api-spec.md)
 - **[Swagger UI]**: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+
+## 10. 사용 도구 및 활용 방식 (Tools & AI Usage)
+
+본 프로젝트는 고도화된 설계를 위해 다음과 같은 도구와 방식을 활용하였습니다.
+
+- **Google Gemini CLI**: 프로젝트 초기 아키텍처 설계, 도메인 모델링, 반복적인 보일러플레이트 코드 생성 및 문서화(Mermaid 다이어그램 자동화) 작업을 수행하였습니다. 특히, 복잡한 비즈니스 로직(권한 체크, 동시성 제어)을 시각화하고 최적의 기술 스택(Java 25 가상 스레드 등)을 선정하는 데 적극 활용되었습니다.
+- **k6**: 대량의 가상 사용자를 투입하여 시스템의 임계치와 동시성 안정성을 검증하는 부하 테스트 도구로 활용하였습니다.
+- **Mermaid**: 설계의 투명성을 위해 ERD, 시퀀스 다이어그램 등을 시각화하는 데 사용되었습니다.
 
 
