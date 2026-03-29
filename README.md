@@ -66,6 +66,4 @@ docker compose up --build
 - **AI 도구**: Google Gemini CLI를 활용하여 프로젝트 아키텍처 설계, 도메인 모델링, 반복적인 보일러플레이트 코드 생성 및 문서화 작업을 효율적으로 진행하였습니다.
 - **참고 자료**: Spring Boot Reference, Spring Security Architecture, SpringDoc OpenAPI Documentation.
 
-## 제출 정보
-- **제출 기한**: 26.03.09(월) 오후 3시
-- **제출처**: recruit@malgn.com
+
