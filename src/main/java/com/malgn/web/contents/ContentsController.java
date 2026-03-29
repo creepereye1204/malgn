@@ -12,6 +12,9 @@ import org.springdoc.core.annotations.ParameterObject;
 import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import java.util.Map;
 
 @Tag(name = "Contents", description = "콘텐츠 관리 API")
 @RestController
@@ -20,6 +23,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class ContentsController {
 
     private final ContentsService contentsService;
+
+    @GetMapping("/me")
+    public Map<String, String> me(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return Map.of("username", "anonymous");
+        }
+        return Map.of("username", userDetails.getUsername());
+    }
 
     @Operation(summary = "새 콘텐츠 생성", description = "새로운 콘텐츠를 시스템에 등록합니다.")
     @PostMapping

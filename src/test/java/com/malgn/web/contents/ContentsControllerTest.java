@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.malgn.domain.contents.Contents;
 import com.malgn.service.contents.ContentsService;
+import com.malgn.service.monitoring.SlackNotifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -34,6 +35,9 @@ class ContentsControllerTest {
     @Mock
     private ContentsService contentsService;
 
+    @Mock
+    private SlackNotifier slackNotifier;
+
     @InjectMocks
     private ContentsController contentsController;
 
@@ -44,7 +48,7 @@ class ContentsControllerTest {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(contentsController)
                 .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .setControllerAdvice(new GlobalExceptionHandler())
+                .setControllerAdvice(new GlobalExceptionHandler(slackNotifier))
                 .build();
     }
 

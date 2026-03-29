@@ -13,13 +13,13 @@ spring:
       schema-locations: classpath:db/sql/h2-schema.sql
       data-locations: classpath:db/sql/h2-data.sql
   datasource:
-    url: jdbc:h2:mem:test
+    url: jdbc:h2:file:./data/cms;DB_CLOSE_DELAY=-1
     username: sa
     password:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         default_batch_fetch_size: 100
@@ -41,7 +41,27 @@ logging:
     console: UTF-8
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p ${PID} --- [%15.15t] %-40.40logger{39} :%06L : %m%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p ${PID} --- [%15.15t] %-40.40logger{39} :%06L : %m%n"
+  file:
+    name: logs/application.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      total-size-cap: 1GB
+      max-history: 30
   level:
     root: info
     web: info
     com.malgn: debug
+
+slack:
+  webhook-url: ${SLACK_WEBHOOK_URL:https://hooks.slack.com/services/YOUR/WEBHOOK/URL}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
