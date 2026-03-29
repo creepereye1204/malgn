@@ -31,10 +31,9 @@ public class ContentsService {
     }
 
     public Contents findById(Long id) {
-        Contents contents = contentsRepository.findById(id)
+        contentsRepository.incrementViewCount(id);
+        return contentsRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Contents not found: " + id));
-        contents.incrementViewCount();
-        return contents;
     }
 
     public void update(Long id, String title, String description) {

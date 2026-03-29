@@ -28,6 +28,9 @@ public class Contents extends BaseTimeEntity {
     @Column(nullable = false)
     private Long viewCount;
 
+    @Version
+    private Long version;
+
     @CreatedBy
     @Column(nullable = false, updatable = false)
     private String createdBy;

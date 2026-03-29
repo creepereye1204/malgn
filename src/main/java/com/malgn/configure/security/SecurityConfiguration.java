@@ -28,6 +28,8 @@ public class SecurityConfiguration {
             request ->
                 request
                     .requestMatchers(
+                        "/",
+                        "/index.html",
                         "/error",
                         "/swagger-ui.html",
                         "/swagger-ui/**",
