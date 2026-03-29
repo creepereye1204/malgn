@@ -33,12 +33,12 @@ public class ContentsService {
     public Contents findById(Long id) {
         contentsRepository.incrementViewCount(id);
         return contentsRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Contents not found: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("콘텐츠를 찾을 수 없습니다: " + id));
     }
 
     public void update(Long id, String title, String description) {
         Contents contents = contentsRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Contents not found: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("콘텐츠를 찾을 수 없습니다: " + id));
 
         checkPermission(contents);
 
@@ -47,7 +47,7 @@ public class ContentsService {
 
     public void delete(Long id) {
         Contents contents = contentsRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Contents not found: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("콘텐츠를 찾을 수 없습니다: " + id));
 
         checkPermission(contents);
 
@@ -60,7 +60,7 @@ public class ContentsService {
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
         if (!isAdmin && !contents.getCreatedBy().equals(currentUsername)) {
-            throw new AccessDeniedException("You do not have permission to modify this content.");
+            throw new AccessDeniedException("해당 콘텐츠를 수정할 권한이 없습니다.");
         }
     }
 }
